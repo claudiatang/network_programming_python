@@ -1,5 +1,4 @@
 import os
-from shutil import register_archive_format
 import sys
 import socket as skt
 import struct
