@@ -1,10 +1,23 @@
-#### Command format
+### Command format
 
 The command format for pinging a remote server is:
 `python ping.py <hostname>`
 
-#### Flow of the pinging functionality
+### Flow of the pinging functionality
 
-#### Calculate checksum
+### Functions
 
-`def calChecksum(packet)`
+- #### Calculate checksum
+
+  `def calChecksum(packet)`
+
+- #### Construct echo request
+
+  `def constructEchoRequest(icmp_type, icmp_code, pid, seq_num, pld_size)`
+
+- #### Send echo request
+
+  `def sendEchoRequest (ping_socket: skt.socket, echo_req_pkt, remote_ip)`
+
+- #### Receive echo reply
+  `def rcvEchoReply(default_timeout, start_time, ping_socket: skt.socket, pid)`
