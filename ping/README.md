@@ -4,7 +4,7 @@
 &emsp;&emsp;`python ping.py <hostname>`
 
 ### Flow of the pinging functionality
-<img src="https://github.com/claudiatang/network_programming_python/blob/main/ping/img/ping_flow_chart.png"  width="450" height="auto">
+<img src="https://github.com/claudiatang/network_programming_python/blob/main/ping/img/ping_flow_chart.png"  width="400" height="auto">
 ### Functions
 
 - #### Calculate checksum
