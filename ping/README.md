@@ -17,7 +17,7 @@
   |packet|_bytes_|bytes object of header+payload|
   - Checksum calculation uses the common checksum algorithm that is also adopted by many other protocols including IP, UDP and TCP.
   The algorithm adds together every two 16-bit words, and wraps around the final carry to be added to the sum. This is illustrated in the following figure:
-  <img src="https://github.com/claudiatang/network_programming_python/blob/main/ping/img/checksum_algorithm.png"  width="200" height="auto">
+  <br><img src="https://github.com/claudiatang/network_programming_python/blob/main/ping/img/checksum_algorithm.png" width="400" height="auto"><br>
   - python bytes object is a sequence of single byte (8 bits) that can be accessed by indexes, so every 2 bytes need to be appended together to form a 16-bit word in checksum calculation.
   This is done by ```word = byte_1*256 + byte_2```, where ```byte_1*256``` appends 8 zeros at the end of byte_1.
   - The function also takes in consideration different [endianness]("https://getkt.com/blog/endianness-little-endian-vs-big-endian/") (byte orders) of different computer systems, which decides the order of which the function appends two bytes. The endianness information is obtained by ```sys.byteorder```
