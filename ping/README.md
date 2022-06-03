@@ -5,25 +5,6 @@
 
 ### Flow of the pinging functionality
 
-```flow
-st=>start: Start
-cond=>condition: Reached
-maxium pinging
-number?
-suba=>subroutine: Create raw socket
-for ICMP
-subb=>subroutine: Construct
-ICMP echo request
-subc=>subroutine: Send echo request
-subd=>subroutine: Receive echo reply
-sube=>subroutine: Close raw socket
-e=>end
-
-st->cond->suba
-cond(no)->suba(right)->subb(right)->subc(right)->subd(right)->sube(right)->cond()
-cond(yes)->e
-```
-
 ### Functions
 
 - #### Calculate checksum
