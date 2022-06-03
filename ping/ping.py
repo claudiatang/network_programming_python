@@ -20,7 +20,8 @@ def main():
     ECHOREQ_CODE = 0
     ECHOREQ_PLD_SIZE = 32
     TIMEOUT = 4
-    PROCESS_ID = os.getpid()&0xffff
+    PROCESS_ID = os.getpid()&0xffff #curb process id within the range of 0~65535
+    print(PROCESS_ID)
     DEFAULT_PING_NUM = 4
     
     for i in range(DEFAULT_PING_NUM):
@@ -29,9 +30,10 @@ def main():
         except skt.error as e:
             print("Create ICMP socket failed with error: ", end='')
             print(e)
-        echo_req_pkt = constructEchoRequest(ECHOREQ_TYPE, ECHOREQ_CODE, os.getpid()&0xffff, i, ECHOREQ_PLD_SIZE)
+        echo_req_pkt = constructEchoRequest(ECHOREQ_TYPE, ECHOREQ_CODE, PROCESS_ID, i, ECHOREQ_PLD_SIZE)
         start_time = sendEchoRequest(socket, echo_req_pkt, dest_IP)
-        rcvEchoReply(TIMEOUT, start_time, socket, PROCESS_ID)
+        if(start_time >= 0):
+            rcvEchoReply(TIMEOUT, start_time, socket, PROCESS_ID)
         socket.close()
         #print("socket closed")
         
@@ -87,7 +89,7 @@ def sendEchoRequest (ping_socket: skt.socket, echo_req_pkt, remote_ip):
         print("Send echo request failed: ", end='')
         print(e.args[1])
         ping_socket.close()
-        return
+        return float(-1.0)
 
 def rcvEchoReply(default_timeout, start_time, ping_socket: skt.socket, pid):
     while True:
