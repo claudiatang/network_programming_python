@@ -1,4 +1,3 @@
-import errno
 import socket as skt
 
 def main():
@@ -11,17 +10,9 @@ def main():
     
     try:
         while True:
-            try:
-                recvHostname, clientAddr = serverSocket.recvfrom(4096)
-                results = query_IP_Cname(recvHostname.decode())
-                serverSocket.sendto(results.encode(), clientAddr)
-            except skt.error as e:
-                err = e.args[0]
-                if err==errno.EAGAIN or err==errno.EWOULDBLOCK:
-                    continue
-                else:
-                    print(e)
-                    
+            recvHostname, clientAddr = serverSocket.recvfrom(4096)
+            results = query_IP_Cname(recvHostname.decode())
+            serverSocket.sendto(results.encode(), clientAddr)
     except KeyboardInterrupt:
         print("DNS server is shutting down ...")
         

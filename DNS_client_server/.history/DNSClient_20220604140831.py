@@ -23,7 +23,6 @@ def main():
                 break
 
             input('Press \'Ctrl + C\' to exit or\nPress \'Enter\' to continue.\n>>')
-    
     except KeyboardInterrupt:
         pass
     
