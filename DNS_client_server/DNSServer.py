@@ -7,7 +7,7 @@ def main():
     serverSocket = skt.socket(skt.AF_INET, skt.SOCK_DGRAM)
     serverSocket.bind(('',serverPort))
     serverSocket.setblocking(0)
-    print('DNS server is ready ...')
+    print('DNS server is ready ...\n press\'Ctrl + C\' to exit')
     
     try:
         while True:
