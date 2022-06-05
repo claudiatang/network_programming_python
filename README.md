@@ -15,5 +15,5 @@ Each program looks into some particular topics in network programming and provid
   - header information retrieval
 
 ### Dependencies 
-python3 standard libraries
+python3 standard libraries.
 Please refer to [the official website](https://www.python.org/downloads/) for downloading and installing python3.  
