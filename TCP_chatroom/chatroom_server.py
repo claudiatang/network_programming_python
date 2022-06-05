@@ -32,12 +32,7 @@ def serverRecv(connectionSocket: skt.socket):
             connectionSocket.send(("ok").encode())
             msg_recv = connectionSocket.recv(1024).decode()
             print(connectionSocket)
-            print('<<<'+ msg_recv)
-            sleep(2)
-            if msg_recv == "exit":
-                connectionSocket.shutdown(skt.SHUT_RDWR)
-                connectionSocket.close()
-                break       
+            print('<<<'+ msg_recv)  
         except skt.error as e:
             print(e)
             break
