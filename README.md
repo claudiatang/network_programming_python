@@ -11,7 +11,7 @@ Each program looks into some particular topics in network programming and provid
   - blocking/non-blocking socket
 - [Ping Remote Server Program](https://github.com/claudiatang/network_programming_python/tree/main/ping)
   - checksum calculation
-  - ICMP message anatomy
+  - ICMP message format
   - header information retrieval
 
 ### Dependencies 
