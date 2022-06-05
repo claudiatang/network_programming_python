@@ -31,10 +31,10 @@ def serverRecv(connectionSocket: skt.socket):
         try:
             connectionSocket.send(("ok").encode())
             msg_recv = connectionSocket.recv(1024).decode()
-            print(connectionSocket)
+            #print(connectionSocket)
             print('<<<'+ msg_recv)  
         except skt.error as e:
-            print(e)
+            #print(e)
             break
 
 
