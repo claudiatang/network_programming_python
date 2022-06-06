@@ -11,12 +11,14 @@ def main():
     serverSocket.listen(5)
     print("Chatroom is open now!")
     
-
+    liveSockets = {}
     while True:
         try:
+            printLiveSockets(liveSockets)
             connectionSocket, addr = serverSocket.accept()
             if connectionSocket != None:
-                new_thread = thd.Thread(target=serverRecv, args=(connectionSocket,))
+                liveSockets[str(connectionSocket.getpeername()[1])] = connectionSocket
+                new_thread = thd.Thread(target=serverRecv, args=(connectionSocket, liveSockets))
                 new_thread.daemon = True
                 new_thread.start()
         except skt.error as e:
@@ -25,16 +27,27 @@ def main():
         
     sys.exit()
 
+def printLiveSockets(liveSockets):
+    for x in liveSockets:
+        print(x)
 
-def serverRecv(connectionSocket: skt.socket):
+def serverRecv(connectionSocket: skt.socket, liveSockets):
     while True:
         try:
-            connectionSocket.send(("ok").encode())
+            connectionSocket.send(("").encode())
             msg_recv = connectionSocket.recv(1024).decode()
-            #print(connectionSocket)
-            print('<<<'+ msg_recv)  
+            print(connectionSocket)
+            print(connectionSocket.getpeername()[1])
+            print('<<<'+ msg_recv)
+            printLiveSockets(liveSockets)
+            for socket in liveSockets:
+                liveSockets[socket].send(('<<<'+ msg_recv).encode())
         except skt.error as e:
             #print(e)
+            printLiveSockets(liveSockets)
+            del liveSockets[str(connectionSocket.getpeername()[1])]
+            connectionSocket.shutdown(skt.SHUT_RDWR)
+            connectionSocket.close()
             break
 
 

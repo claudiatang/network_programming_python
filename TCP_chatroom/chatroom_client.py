@@ -1,5 +1,6 @@
 import threading as thd
 import socket as skt
+import sys
 
 def main():
     serverIP = getIPAddr("Enter chatroom server IPv4 address: ")
@@ -13,23 +14,15 @@ def main():
             break
         except skt.error as e:
             print(e)
-            
-    try:
-        while True:
-            msg_send = takeMsg()
-            try:
-                if msg_send == 'exit':
-                    clientSocket.shutdown(skt.SHUT_RDWR)
-                    clientSocket.close()
-                    break
-                clientSocket.send(msg_send.encode())
-            except skt.error as e:
-                print(e)
-                break
-    except KeyboardInterrupt:
-        clientSocket.shutdown(skt.SHUT_RDWR)
-        clientSocket.close()
-        print("Terminate connection by keyboard interruption.\nClient is leaving.")
+    
+    sending_thread = thd.Thread(target=clientSendMsg, args=(clientSocket,))
+    recving_thread = thd.Thread(target=clientRecvMsg, args=(clientSocket,))
+    
+    sending_thread.start()
+    recving_thread.start()
+    sending_thread.join()
+
+    sys.exit()
     
 def takeMsg():
     inputMsg = ""
@@ -62,19 +55,32 @@ def getPortNum(min: int, max: int, prompt: str):
             print("Not a legal port number")
     return port
 
-def clientSendMsg(clientSocket):
-    while True:
-        msg_send = input('>>')
-        try:
-            # socket.send() is used for TCP SOCK_STREAM connected sockets
-            # socket.sendto() is used for UDP SOCK_DGRAM unconnected datagram sockets
-            clientSocket.send(msg_send.encode())
-            if msg_send == 'byebye':
+def clientSendMsg(clientSocket: skt.socket):
+    try:
+        while True:
+            msg_send = takeMsg()
+            try:
+                if msg_send == 'exit':
+                    clientSocket.shutdown(skt.SHUT_RDWR)
+                    clientSocket.close()
+                    break
+                clientSocket.send(msg_send.encode())
+            except skt.error as e:
+                print(e)
                 break
-        except:
-            print("Break due to sending to server error.")
-            break
+    except KeyboardInterrupt:
+        clientSocket.shutdown(skt.SHUT_RDWR)
+        clientSocket.close()
+        print("Terminate connection by keyboard interruption.\nClient is leaving.")
     
+def clientRecvMsg(clientSocket: skt.socket):
+    while True:
+        try:
+            msg_recv = clientSocket.recv(1024).decode()
+            print(msg_recv)
+        except:
+            print("exit client recv...")
+            break
         
 
 
