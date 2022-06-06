@@ -14,10 +14,10 @@ def main():
     liveSockets = {}
     while True:
         try:
-            printLiveSockets(liveSockets)
+            #printLiveSockets(liveSockets)
             connectionSocket, addr = serverSocket.accept()
             nickname = connectionSocket.recv(10).decode()
-            print(nickname)
+            #print(nickname)
             if connectionSocket != None:
                 liveSockets[nickname] = connectionSocket
                 #liveSockets[str(connectionSocket.getpeername()[1])] = connectionSocket
@@ -39,10 +39,10 @@ def serverRecv(connectionSocket: skt.socket, liveSockets, nickname):
         try:
             connectionSocket.send(("test_if_sock_is_still_open").encode())
             msg_recv = connectionSocket.recv(1024).decode()
-            print(connectionSocket)
-            print(connectionSocket.getpeername()[1])
+            #print(connectionSocket)
+            #print(connectionSocket.getpeername()[1])
             print(f"{nickname}: "+ msg_recv)
-            printLiveSockets(liveSockets)
+            #printLiveSockets(liveSockets)
             for key in liveSockets:
                 if key == nickname:
                     liveSockets[key].send(("You: "+msg_recv).encode())
@@ -51,9 +51,10 @@ def serverRecv(connectionSocket: skt.socket, liveSockets, nickname):
         except skt.error as e:
             #print(e)
             #printLiveSockets(liveSockets)
+            print(f"{nickname} is leaving ...")
             del liveSockets[nickname]
-            #connectionSocket.shutdown(skt.SHUT_RDWR)
-            #connectionSocket.close()
+            connectionSocket.shutdown(skt.SHUT_RDWR)
+            connectionSocket.close()
             break
 
 
