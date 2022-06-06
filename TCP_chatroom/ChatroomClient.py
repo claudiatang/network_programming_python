@@ -1,3 +1,4 @@
+from ast import Str
 import threading as thd
 import socket as skt
 import sys
@@ -5,13 +6,15 @@ import sys
 def main():
     serverIP = getIPAddr("Enter chatroom server IPv4 address: ")
     serverPort = 49152
+    clientNickname = getString("Enter your chatroom nickname (10 letters maximum): ", 10)
+    
 
     clientSocket = skt.socket(skt.AF_INET, skt.SOCK_STREAM)
     while True:
         try:
             clientSocket.connect((serverIP, serverPort))
-            clientSocketPort = clientSocket.getsockname()[1]
             print('Connect to remote successful.')
+            clientSocket.send(clientNickname.encode())
             break
         except skt.error as e:
             print(e)
@@ -24,6 +27,13 @@ def main():
     sending_thread.join()
 
     sys.exit()
+
+def getString(prompt: Str, maxLen: int):
+    inputStr = ""
+    while inputStr=="" or len(inputStr)>maxLen:
+        inputStr=input(prompt)
+    return inputStr
+        
     
 def takeMsg():
     inputMsg = ""

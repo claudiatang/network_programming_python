@@ -16,9 +16,12 @@ def main():
         try:
             printLiveSockets(liveSockets)
             connectionSocket, addr = serverSocket.accept()
+            nickname = connectionSocket.recv(10).decode()
+            print(nickname)
             if connectionSocket != None:
-                liveSockets[str(connectionSocket.getpeername()[1])] = connectionSocket
-                new_thread = thd.Thread(target=serverRecv, args=(connectionSocket, liveSockets))
+                liveSockets[nickname] = connectionSocket
+                #liveSockets[str(connectionSocket.getpeername()[1])] = connectionSocket
+                new_thread = thd.Thread(target=serverRecv, args=(connectionSocket, liveSockets, nickname))
                 new_thread.daemon = True
                 new_thread.start()
         except skt.error as e:
@@ -31,21 +34,24 @@ def printLiveSockets(liveSockets):
     for x in liveSockets:
         print(x)
 
-def serverRecv(connectionSocket: skt.socket, liveSockets):
+def serverRecv(connectionSocket: skt.socket, liveSockets, nickname):
     while True:
         try:
             connectionSocket.send(("test_if_sock_is_still_open").encode())
             msg_recv = connectionSocket.recv(1024).decode()
             print(connectionSocket)
             print(connectionSocket.getpeername()[1])
-            print('<<<'+ msg_recv)
+            print(f"{nickname}: "+ msg_recv)
             printLiveSockets(liveSockets)
-            for socket in liveSockets:
-                liveSockets[socket].send(msg_recv.encode())
+            for key in liveSockets:
+                if key == nickname:
+                    liveSockets[key].send(("You: "+msg_recv).encode())
+                else:
+                    liveSockets[key].send((f"{nickname}: "+msg_recv).encode())
         except skt.error as e:
             #print(e)
             #printLiveSockets(liveSockets)
-            del liveSockets[str(connectionSocket.getpeername()[1])]
+            del liveSockets[nickname]
             #connectionSocket.shutdown(skt.SHUT_RDWR)
             #connectionSocket.close()
             break
