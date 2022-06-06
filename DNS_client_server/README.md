@@ -11,8 +11,8 @@
    - [DNSClient.py](https://github.com/claudiatang/network_programming_python/blob/main/DNS_client_server/DNSClient.py) as a DNS client
 - To use the DNS query function from the client:
   - Open two terminals. 
-  - In the first terminal, run ```python DNSServer.py``` to launch the DNS server and keep the server on. Once the server is successfully launched and ready to receive queries, the program prints "DNS server is ready ..." on the terminal.
-  - In the second terminal run ```python DNSClient``` to open the DNS client program. Once the client is on, type a remote host name as instructed to query for its IPv4 and Cname record.
+  - In the first terminal, use command ```python DNSServer.py``` to launch the DNS server and keep the server on. Once the server is successfully launched and ready to receive queries, the program prints "DNS server is ready ..." on the terminal.
+  - In the second terminal, use command ```python DNSClient``` to run the DNS client program. Once the client is on, type a remote host name as instructed to query for its IPv4 and Cname record.
 - To terminate the program:
    - Exit the server: press "Ctrl + C" anytime 
    - Exit the client: press "Ctrl + C" after a query
