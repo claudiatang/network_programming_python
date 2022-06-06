@@ -34,20 +34,20 @@ def printLiveSockets(liveSockets):
 def serverRecv(connectionSocket: skt.socket, liveSockets):
     while True:
         try:
-            connectionSocket.send(("").encode())
+            connectionSocket.send(("test_if_sock_is_still_open").encode())
             msg_recv = connectionSocket.recv(1024).decode()
             print(connectionSocket)
             print(connectionSocket.getpeername()[1])
             print('<<<'+ msg_recv)
             printLiveSockets(liveSockets)
             for socket in liveSockets:
-                liveSockets[socket].send(('<<<'+ msg_recv).encode())
+                liveSockets[socket].send(msg_recv.encode())
         except skt.error as e:
             #print(e)
-            printLiveSockets(liveSockets)
+            #printLiveSockets(liveSockets)
             del liveSockets[str(connectionSocket.getpeername()[1])]
-            connectionSocket.shutdown(skt.SHUT_RDWR)
-            connectionSocket.close()
+            #connectionSocket.shutdown(skt.SHUT_RDWR)
+            #connectionSocket.close()
             break
 
 

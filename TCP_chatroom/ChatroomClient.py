@@ -10,6 +10,7 @@ def main():
     while True:
         try:
             clientSocket.connect((serverIP, serverPort))
+            clientSocketPort = clientSocket.getsockname()[1]
             print('Connect to remote successful.')
             break
         except skt.error as e:
@@ -77,11 +78,18 @@ def clientRecvMsg(clientSocket: skt.socket):
     while True:
         try:
             msg_recv = clientSocket.recv(1024).decode()
-            print(msg_recv)
+            if msg_recv == "test_if_sock_is_still_open":
+                continue
+            else:
+                msg_display = "<<"+msg_recv
+                print()
+                print(colored(255,128,0,msg_display)+"\n>>", end='')
         except:
             print("exit client recv...")
             break
-        
+
+def colored(r, g, b, text):
+    return "\033[38;2;{};{};{}m{} \033[38;2;255;255;255m".format(r, g, b, text)        
 
 
 if __name__ == '__main__':
