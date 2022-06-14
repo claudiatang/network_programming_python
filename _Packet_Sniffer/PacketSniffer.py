@@ -21,12 +21,12 @@ def main():
 
             # receive a package
             recved_obj = winRawSocket.recvfrom(65534)
-            print(recved_obj)
-            for x in recved_obj:
-                print(type(x))
-                print(len(x))
+            #print(recved_obj)
+            #for x in recved_obj:
+            #    print(type(x))
+            #    print(len(x))
             dlHeader = data_link_header(recved_obj[0])
-            print(type(dlHeader))
+            print(f"data link layer header: {dlHeader}")
             # disabled promiscuous mode
             winRawSocket.ioctl(skt.SIO_RCVALL, skt.RCVALL_OFF)
     except KeyboardInterrupt:
@@ -38,14 +38,20 @@ def main():
 
 def data_link_header(packet):
     d, s, p = struct.unpack('!6s6sH', packet[:14])
+    #print(f"d: {d}")
+    #print(f"s: {s}")
+    #print(f"p: {p}")
     destMac = mac_addr(d)
     srcMac = mac_addr(s)
     protoType = skt.htons(p)
+    #print(f"destMac: {destMac}")
+    #print(f"srcMac: {srcMac}")
+    #print(f"protoType: {protoType}")
     return destMac, srcMac, protoType
 
 def mac_addr(bytesObj):
     addrSections = map(lambda x: format(x, '02x'), bytesObj)
-    return ':'.join(addrSections).upper
+    return ':'.join(addrSections)
     
     
     
