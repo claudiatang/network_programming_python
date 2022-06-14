@@ -1,22 +1,36 @@
-import socket as skt
-
 # simple sniffer on windows code example from https://docs.python.org/3/library/socket.html
 # the public network interface
-HOST = skt.gethostbyname(skt.gethostname())
+import socket as skt
 
-# create a raw socket and bind it to the public interface
-WinSocket = skt.socket(skt.AF_INET, skt.SOCK_RAW, skt.IPPROTO_IP)
-#LinuxSocket = skt.socket(skt.AF_PACKET, skt.SOCK_RAW, skt.ntohs(3))
+def main():
+    HOST = skt.gethostbyname(skt.gethostname())
 
-# Include IP headers
-WinSocket.setsockopt(skt.IPPROTO_IP, skt.IP_HDRINCL, 1)
+    # create a raw socket and bind it to the public interface
+    winRawSocket = skt.socket(skt.AF_INET, skt.SOCK_RAW, skt.IPPROTO_IP)
+    #LinuxSocket = skt.socket(skt.AF_PACKET, skt.SOCK_RAW, skt.ntohs(3))
 
-# receive all packages
-WinSocket.ioctl(skt.SIO_RCVALL, skt.RCVALL_ON)
+    # Include IP headers
+    winRawSocket.setsockopt(skt.IPPROTO_IP, skt.IP_HDRINCL, 1)
+    winRawSocket.bind((HOST,65534))
 
-# receive a package
-print(WinSocket.recvfrom(65565))
+    # receive all packages
+    try: 
+        while True:
+            winRawSocket.ioctl(skt.SIO_RCVALL, skt.RCVALL_ON)
 
-# disabled promiscuous mode
-WinSocket.ioctl(skt.SIO_RCVALL, skt.RCVALL_OFF)
+            # receive a package
+            print(winRawSocket.recvfrom(65534))
+
+            # disabled promiscuous mode
+            winRawSocket.ioctl(skt.SIO_RCVALL, skt.RCVALL_OFF)
+    except KeyboardInterrupt:
+        pass
+    
+    
+    winRawSocket.close()
+    print("Sniffer stops!")
+    
+    
+if __name__ == '__main__':
+    main()
 
