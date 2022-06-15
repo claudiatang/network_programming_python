@@ -25,6 +25,7 @@ def main():
             #dlHeader = data_link_header(rawData)
             ipHeader = ip_header(rawData)
             #print(f"data link layer header: {dlHeader}")
+            print(f"ip header version: {ipHeader[0]}")
             print(f"ip header ihl: {ipHeader[1]}")
             print(f"ip header total length: {ipHeader[3]}")
             print(f"ip header ttl: {ipHeader[5]}")
@@ -61,7 +62,7 @@ def mac_addr(bytesObj):
 
 def ip_header(rawData):
     ip_header = struct.unpack('!BBHHHBBH4s4s', rawData[:20])
-    version = (0b011110000 & ip_header[0])/16
+    version = int((0b011110000 & ip_header[0])/16)
     ihl = 0b000001111 & ip_header[0]
     tos = format(ip_header[1], 'd')
     totalLen = format(ip_header[2], 'd')
