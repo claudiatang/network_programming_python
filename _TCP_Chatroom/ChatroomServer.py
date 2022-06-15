@@ -1,12 +1,12 @@
 import sys
-import errno
-import socket as skt
-import threading as thd
-from time import sleep
+#import errno
+import socket
+import threading
+#from time import sleep
 
 def main():
     serverPort = 49152
-    serverSocket = skt.socket(skt.AF_INET, skt.SOCK_STREAM)
+    serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serverSocket.bind(('', serverPort))
     serverSocket.listen(5)
     print("Chatroom is open now!")
@@ -21,10 +21,10 @@ def main():
             if connectionSocket != None:
                 liveSockets[nickname] = connectionSocket
                 #liveSockets[str(connectionSocket.getpeername()[1])] = connectionSocket
-                new_thread = thd.Thread(target=serverRecv, args=(connectionSocket, liveSockets, nickname))
+                new_thread = threading.Thread(target=serverRecv, args=(connectionSocket, liveSockets, nickname))
                 new_thread.daemon = True
                 new_thread.start()
-        except skt.error as e:
+        except socket.error as e:
             print("*******************************************************************")
             print(e)
         
@@ -34,7 +34,7 @@ def printLiveSockets(liveSockets):
     for x in liveSockets:
         print(x)
 
-def serverRecv(connectionSocket: skt.socket, liveSockets, nickname):
+def serverRecv(connectionSocket: socket.socket, liveSockets, nickname):
     while True:
         try:
             connectionSocket.send(("test_if_sock_is_still_open").encode())
@@ -48,12 +48,12 @@ def serverRecv(connectionSocket: skt.socket, liveSockets, nickname):
                     liveSockets[key].send(("You: "+msg_recv).encode())
                 else:
                     liveSockets[key].send((f"{nickname}: "+msg_recv).encode())
-        except skt.error as e:
+        except socket.error as e:
             #print(e)
             #printLiveSockets(liveSockets)
             print(f"{nickname} is leaving ...")
             del liveSockets[nickname]
-            connectionSocket.shutdown(skt.SHUT_RDWR)
+            connectionSocket.shutdown(socket.SHUT_RDWR)
             connectionSocket.close()
             break
 

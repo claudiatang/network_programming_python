@@ -1,6 +1,6 @@
 from ast import Str
-import threading as thd
-import socket as skt
+import threading
+import socket
 import sys
 
 def main():
@@ -9,18 +9,18 @@ def main():
     clientNickname = getString("Enter your chatroom nickname (10 letters maximum): ", 10)
     
 
-    clientSocket = skt.socket(skt.AF_INET, skt.SOCK_STREAM)
+    clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     while True:
         try:
             clientSocket.connect((serverIP, serverPort))
             print('Connect to remote successful.')
             clientSocket.send(clientNickname.encode())
             break
-        except skt.error as e:
+        except socket.error as e:
             print(e)
     
-    sending_thread = thd.Thread(target=clientSendMsg, args=(clientSocket,))
-    recving_thread = thd.Thread(target=clientRecvMsg, args=(clientSocket,))
+    sending_thread = threading.Thread(target=clientSendMsg, args=(clientSocket,))
+    recving_thread = threading.Thread(target=clientRecvMsg, args=(clientSocket,))
     
     sending_thread.start()
     recving_thread.start()
@@ -52,9 +52,9 @@ def getIPAddr(prompt):
             if IP=="localhost":
                 return IP
             else:
-                skt.inet_aton(IP)
+                socket.inet_aton(IP)
                 return IP
-        except skt.error:
+        except socket.error:
             print("Not a legal IPv4 address")
             
 def getPortNum(min: int, max: int, prompt: str):
@@ -62,29 +62,29 @@ def getPortNum(min: int, max: int, prompt: str):
     while port<min or port>max:
         try:
             port = int(input(prompt))
-        except skt.error:
+        except socket.error:
             print("Not a legal port number")
     return port
 
-def clientSendMsg(clientSocket: skt.socket):
+def clientSendMsg(clientSocket: socket.socket):
     try:
         while True:
             msg_send = takeMsg()
             try:
                 if msg_send == 'exit':
-                    clientSocket.shutdown(skt.SHUT_RDWR)
+                    clientSocket.shutdown(socket.SHUT_RDWR)
                     clientSocket.close()
                     break
                 clientSocket.send(msg_send.encode())
-            except skt.error as e:
+            except socket.error as e:
                 print(e)
                 break
     except KeyboardInterrupt:
-        clientSocket.shutdown(skt.SHUT_RDWR)
+        clientSocket.shutdown(socket.SHUT_RDWR)
         clientSocket.close()
         print("Terminate connection by keyboard interruption.\nClient is leaving.")
     
-def clientRecvMsg(clientSocket: skt.socket):
+def clientRecvMsg(clientSocket: socket.socket):
     while True:
         try:
             msg_recv = clientSocket.recv(1024).decode()
