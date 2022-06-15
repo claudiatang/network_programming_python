@@ -22,8 +22,8 @@ def main():
 
             # receive a package
             rawData, addr = winRawSocket.recvfrom(65565)
-            #dlHeader = data_link_header(rawData)
-            ipHeader = ip_header(rawData)
+            #dlHeader = get_ether_header(rawData)
+            ipHeader = get_ip_header(rawData)
             #print(f"data link layer header: {dlHeader}")
             print(f"ip header version: {ipHeader[0]}")
             print(f"ip header ihl: {ipHeader[1]}")
@@ -42,25 +42,25 @@ def main():
     print("Sniffer stops!")
 
 
-def data_link_header(rawData):
+def get_ether_header(rawData):
     ether_header = struct.unpack('!6s6sH', rawData[:14])
     #print(f"d: {d}")
     #print(f"s: {s}")
     #print(f"p: {p}")
-    destMac = mac_addr(ether_header[0])
-    srcMac = mac_addr(ether_header[1])
+    destMac = get_mac_addr(ether_header[0])
+    srcMac = get_mac_addr(ether_header[1])
     protoType = socket.htons(ether_header[2])
     #print(f"destMac: {destMac}")
     #print(f"srcMac: {srcMac}")
     #print(f"protoType: {protoType}")
     return destMac, srcMac, protoType
 
-def mac_addr(bytesObj):
+def get_mac_addr(bytesObj):
     addrSections = map(lambda x: format(x, '02x'), bytesObj)
     #addrSections = map('{:02x}'.format, bytesObj)
     return ':'.join(addrSections)
 
-def ip_header(rawData):
+def get_ip_header(rawData):
     ip_header = struct.unpack('!BBHHHBBH4s4s', rawData[:20])
     version = int((0b011110000 & ip_header[0])/16)
     ihl = 0b000001111 & ip_header[0]
@@ -69,11 +69,11 @@ def ip_header(rawData):
     idf = format(ip_header[3], 'd')
     ttl = format(ip_header[5],'d')
     proto = format(ip_header[6], 'd')
-    srcIP = ip_addr(ip_header[8])
-    destIP = ip_addr(ip_header[9])
+    srcIP = get_ip_addr(ip_header[8])
+    destIP = get_ip_addr(ip_header[9])
     return version, ihl, tos, totalLen, idf, ttl, proto, srcIP, destIP
 
-def ip_addr(bytesObj):
+def get_ip_addr(bytesObj):
     addrSections = map(lambda x: format(x, 'd'), bytesObj)
     return '.'.join(addrSections)
     
