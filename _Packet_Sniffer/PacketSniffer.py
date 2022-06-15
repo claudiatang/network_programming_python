@@ -1,34 +1,34 @@
 # simple sniffer on windows code example from https://docs.python.org/3/library/socket.html
 # the public network interface
-import socket as skt
+import socket
 import struct
 
 def main():
-    HOST = skt.gethostbyname(skt.gethostname())
+    HOST = socket.gethostbyname(socket.gethostname())
 
     # create a raw socket and bind it to the public interface
-    winRawSocket = skt.socket(skt.AF_INET, skt.SOCK_RAW, skt.IPPROTO_IP)
-    #LinuxSocket = skt.socket(skt.AF_PACKET, skt.SOCK_RAW, skt.ntohs(3))
+    winRawSocket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)
+    #LinuxSocket = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
 
     # Include IP headers
-    winRawSocket.setsockopt(skt.IPPROTO_IP, skt.IP_HDRINCL, 1)
-    winRawSocket.bind((HOST,65534))
+    #winRawSocket.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
+    winRawSocket.bind((HOST,0))
+    winRawSocket.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
 
     # receive all packages
     try: 
         while True:
-            winRawSocket.ioctl(skt.SIO_RCVALL, skt.RCVALL_ON)
+            winRawSocket.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
 
             # receive a package
-            recved_obj = winRawSocket.recvfrom(65534)
-            #print(recved_obj)
-            #for x in recved_obj:
-            #    print(type(x))
-            #    print(len(x))
-            dlHeader = data_link_header(recved_obj[0])
+            rawData, addr = winRawSocket.recvfrom(65565)
+            dlHeader = data_link_header(rawData)
+            ipHeader = ip_header(rawData)
             print(f"data link layer header: {dlHeader}")
+            print(f"ip addresses: {ipHeader[0]} --> {ipHeader[1]}")
+            #print(rawData)
             # disabled promiscuous mode
-            winRawSocket.ioctl(skt.SIO_RCVALL, skt.RCVALL_OFF)
+            winRawSocket.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
     except KeyboardInterrupt:
         pass
     
@@ -36,14 +36,15 @@ def main():
     winRawSocket.close()
     print("Sniffer stops!")
 
-def data_link_header(packet):
-    d, s, p = struct.unpack('!6s6sH', packet[:14])
+
+def data_link_header(rawData):
+    ether_header = struct.unpack('!6s6sH', rawData[:14])
     #print(f"d: {d}")
     #print(f"s: {s}")
     #print(f"p: {p}")
-    destMac = mac_addr(d)
-    srcMac = mac_addr(s)
-    protoType = skt.htons(p)
+    destMac = mac_addr(ether_header[0])
+    srcMac = mac_addr(ether_header[1])
+    protoType = socket.htons(ether_header[2])
     #print(f"destMac: {destMac}")
     #print(f"srcMac: {srcMac}")
     #print(f"protoType: {protoType}")
@@ -51,7 +52,19 @@ def data_link_header(packet):
 
 def mac_addr(bytesObj):
     addrSections = map(lambda x: format(x, '02x'), bytesObj)
+    #addrSections = map('{:02x}'.format, bytesObj)
     return ':'.join(addrSections)
+
+def ip_header(rawData):
+    ip_header = struct.unpack('!BBHHHBBH4s4s', rawData[:20])
+    srcIP = ip_addr(ip_header[8])
+    destIP = ip_addr(ip_header[9])
+    return srcIP, destIP
+
+def ip_addr(bytesObj):
+    addrSections = map(lambda x: format(x, 'd'), bytesObj)
+    return '.'.join(addrSections)
+    
     
     
     
