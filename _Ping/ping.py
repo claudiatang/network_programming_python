@@ -1,6 +1,6 @@
 import os
 import sys
-import socket as skt
+import socket
 import struct
 import time
 import select
@@ -10,7 +10,7 @@ def main():
     if len(sys.argv) != 2:
         sys.exit('Command format error.\nPlease use correct format: python ping.py <hostname>')
     try:
-        dest_IP = skt.gethostbyname(sys.argv[1])
+        dest_IP = socket.gethostbyname(sys.argv[1])
     except:
         sys.exit('Provided host name not found')
     
@@ -26,8 +26,8 @@ def main():
     
     for i in range(DEFAULT_PING_NUM):
         try:
-            socket = skt.socket(skt.AF_INET,skt.SOCK_RAW, skt.getprotobyname("icmp"))
-        except skt.error as e:
+            socket = socket.socket(socket.AF_INET,socket.SOCK_RAW, socket.getprotobyname("icmp"))
+        except socket.error as e:
             print("Create ICMP socket failed with error: ", end='')
             print(e)
         echo_req_pkt = constructEchoRequest(ECHOREQ_TYPE, ECHOREQ_CODE, PROCESS_ID, i, ECHOREQ_PLD_SIZE)
@@ -63,7 +63,7 @@ def calChecksum(packet):
     # wrap around the carry and add to the rightmost position
     sum=(sum>>16)+(sum&0xffff)
     # convert 16 bit integer from host to network byte order
-    checksum = skt.htons(~sum&0xffff)
+    checksum = socket.htons(~sum&0xffff)
     return checksum
     
 def constructEchoRequest(icmp_type, icmp_code, pid, seq_num, pld_size):
@@ -79,19 +79,19 @@ def constructEchoRequest(icmp_type, icmp_code, pid, seq_num, pld_size):
     #print("echo request constructed")
     return header+payload
 
-def sendEchoRequest (ping_socket: skt.socket, echo_req_pkt, remote_ip):
+def sendEchoRequest (ping_socket: socket.socket, echo_req_pkt, remote_ip):
     try:
         ping_socket.sendto(echo_req_pkt, (remote_ip,1))
         start_time = time.time()
         #print("echo request sent")
         return start_time
-    except skt.error as e:
+    except socket.error as e:
         print("Send echo request failed: ", end='')
         print(e.args[1])
         ping_socket.close()
         return float(-1.0)
 
-def rcvEchoReply(default_timeout, start_time, ping_socket: skt.socket, pid):
+def rcvEchoReply(default_timeout, start_time, ping_socket: socket.socket, pid):
     while True:
         ready = select.select([ping_socket],[],[], default_timeout)
         if ready[0] == []:
