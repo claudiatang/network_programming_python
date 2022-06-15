@@ -1,24 +1,24 @@
 #from http import server
-import socket as skt
+import socket
 
 def main():
     serverName = 'localhost'
     serverPort = 13500
-    clientSocket = skt.socket(skt.AF_INET, skt.SOCK_DGRAM)
+    clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     
     try:
         while True:
             hostnameInput = input('Enter hostname to be looked up: ')
             try:
                 clientSocket.sendto(hostnameInput.encode(), (serverName,serverPort))
-            except skt.error as e:
+            except socket.error as e:
                 print(e)
                 break
             
             try:
                 recvRecord, serverAddr = clientSocket.recvfrom(4096)
                 print(recvRecord.decode())
-            except skt.error as e:
+            except socket.error as e:
                 print(e)
                 break
 

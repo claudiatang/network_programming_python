@@ -1,10 +1,10 @@
 import errno
-import socket as skt
+import socket
 
 def main():
 
     serverPort = 13500
-    serverSocket = skt.socket(skt.AF_INET, skt.SOCK_DGRAM)
+    serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     serverSocket.bind(('',serverPort))
     serverSocket.setblocking(0)
     print('DNS server is ready ...\n press\'Ctrl + C\' to exit')
@@ -15,7 +15,7 @@ def main():
                 recvHostname, clientAddr = serverSocket.recvfrom(4096)
                 results = query_IP_Cname(recvHostname.decode())
                 serverSocket.sendto(results.encode(), clientAddr)
-            except skt.error as e:
+            except socket.error as e:
                 err = e.args[0]
                 if err==errno.EAGAIN or err==errno.EWOULDBLOCK:
                     continue
@@ -32,7 +32,7 @@ def main():
 def query_IP_Cname(hostname: str):
     results = '\n'
     try:
-        addrInfo = skt.getaddrinfo(hostname, None, 0, 0, 0, skt.AI_CANONNAME)
+        addrInfo = socket.getaddrinfo(hostname, None, 0, 0, 0, socket.AI_CANONNAME)
         for x in addrInfo:
             if x[3] != '':
                 #print('CNAME: ',end='')
