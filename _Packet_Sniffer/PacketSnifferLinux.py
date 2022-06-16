@@ -17,7 +17,8 @@ def main():
             ip_header = pparser.get_ip_addr(rawData[14:34])
             print(f"## IP header info:")
             print(f"   IP version: {ip_header[0]}")
-            print(f"   IP header len: {ip_header[1]*32/8}")
+            ip_ihl = ip_header[1]*32/8
+            print(f"   IP header len: {ip_ihl}")
             print(f"   IP upper layer proto: {ip_header[6]}")
             print(f"   IP addresses: src {ip_header[7]} --> dest {ip_header[8]}")
             
