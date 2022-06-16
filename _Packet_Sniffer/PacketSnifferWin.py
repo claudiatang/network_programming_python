@@ -8,7 +8,7 @@ import dpkt
 def main():
     HOST = socket.gethostbyname(socket.gethostname())
     
-    pc = pcap.pcap(None)
+    pc = pcap.pcap(name=None, promisc=True, immediate=True, timeout_ms=50)
     decode = {pcap.DLT_LOOP:dpkt.loopback.Loopback, pcap.DLT_NULL:dpkt.loopback.Loopback, pcap.DLT_EN10MB:dpkt.ethernet.Ethernet}[pc.datalink()]
     
     try:
