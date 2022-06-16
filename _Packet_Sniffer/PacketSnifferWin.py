@@ -2,48 +2,35 @@
 # the public network interface
 import socket
 import struct
+import pcap
+import dpkt
 
 def main():
     HOST = socket.gethostbyname(socket.gethostname())
+    
+    pc = pcap.pcap(None)
+    decode = {pcap.DLT_LOOP:dpkt.loopback.Loopback, pcap.DLT_NULL:dpkt.loopback.Loopback, pcap.DLT_EN10MB:dpkt.ethernet.Ethernet}[pc.datalink()]
+    
+    try:
+        print(f"Listening on {pc.name}: {pc.filter}")
+        for ts, pkt in pc:
+            raw_data = str(decode(pkt))
+            dest_mac, src_mac, eth_proto = get_ether_header(raw_data[:14])
 
-    # create a raw socket and bind it to the public interface
-    winRawSocket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)
-    #LinuxSocket = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
-
-    # Include IP headers
-    #winRawSocket.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
-    winRawSocket.bind((HOST,0))
-    winRawSocket.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
-
-    # receive all packages
-    try: 
-        while True:
-            winRawSocket.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
-
-            # receive a package
-            rawData, addr = winRawSocket.recvfrom(65565)
-            #dlHeader = get_ether_header(rawData)
-            ipHeader = get_ip_header(rawData)
-            #print(f"data link layer header: {dlHeader}")
-            print(f"ip header version: {ipHeader[0]}")
-            print(f"ip header ihl: {ipHeader[1]}")
-            print(f"ip header total length: {ipHeader[3]}")
-            print(f"ip header ttl: {ipHeader[5]}")
-            print(f"ip header protocol: {ipHeader[6]}")
-            print(f"ip addresses: {ipHeader[7]} --> {ipHeader[8]}")
-            #print(rawData)
-            # disabled promiscuous mode
-            winRawSocket.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
+            print('\nEthernet Frame:')
+            print(f"Destination MAC: {dest_mac}")
+            print(f"Source MAC: {src_mac}")
+            print(f"Protocol: {eth_proto}")
     except KeyboardInterrupt:
-        pass
+        nrecv, ndrop, nifdrop = pc.stats()
+        print(f"\n{nrecv} packets received by filter")
+        print(f"{ndrop} packets dropped by kernel")
     
-    
-    winRawSocket.close()
     print("Sniffer stops!")
 
 
-def get_ether_header(rawData):
-    ether_header = struct.unpack('!6s6sH', rawData[:14])
+def get_ether_header(rawHeader):
+    ether_header = struct.unpack('!6s6sH', rawHeader)
     #print(f"d: {d}")
     #print(f"s: {s}")
     #print(f"p: {p}")
