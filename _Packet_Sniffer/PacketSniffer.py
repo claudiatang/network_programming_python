@@ -43,9 +43,7 @@ def main():
                 print(f"   ICMP checksum: {icmp_header[2]} {len(icmp_header[2])}")
                 print(f"   pid: {icmp_header[3]}")
                 print(f"   sequence number: {icmp_header[4]}")
-            # disabled promiscuous mode
-            winRawSocket.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
-            
+                
             #print TCP header
             if int(ipHeader[6]) == 6:
                 tcp_header = pparser.get_tcp_header(rawData[20:40])
@@ -62,6 +60,11 @@ def main():
                 print(f"   TCP window size: {tcp_header[7]}")
                 print(f"   TCP checksum: {tcp_header[8]}")
                 print(f"   TCP urgent point: {tcp_header[9]}")
+            
+            # disabled promiscuous mode
+            winRawSocket.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
+            
+            
                 
     except KeyboardInterrupt:
         pass

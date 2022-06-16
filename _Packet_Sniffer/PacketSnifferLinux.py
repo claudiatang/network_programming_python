@@ -1,5 +1,5 @@
 import socket
-import struct
+import PacketParser as pparser
 
 def main():
     HOST = socket.gethostbyname(socket.gethostname())
@@ -8,10 +8,43 @@ def main():
     try:
         while True:
             rawData, addr = linRawSock.recvfrom(65565)
-            dest_mac, src_mac, eth_proto = data_link_header(rawData)
-            print(f"dest mac: {dest_mac}")
-            print(f"source mac: {src_mac}")
-            print(f"ethernet protocol: {eth_proto}")
+            dest_mac, src_mac, eth_proto = pparser.get_ether_header(rawData[:14])
+            print(f"# Ethernet header info:")
+            print(f"  dest mac: {dest_mac}")
+            print(f"  source mac: {src_mac}")
+            print(f"  ethernet protocol: {eth_proto}")
+            
+            ip_ver, ihl, tos, total_len, idf, ttl, upper_l_proto, src_ip, dest_ip = pparser.get_ip_addr(rawData[14:34])
+            print(f"## IP header info:")
+            print(f"   IP version: {ip_ver}")
+            print(f"   IP header len: {ihl*32/8}")
+            print(f"   IP upper layer proto: {upper_l_proto}")
+            print(f"   IP addresses: src {src_ip} --> dest {dest_ip}")
+            
+            if int(upper_l_proto) == 1:
+                icmp_header = pparser.get_icmp_header(rawData[20:28])
+                print(f"### ICMP header fields:")
+                print(f"    ICMP type: {icmp_header[0]}")
+                print(f"    ICMP code: {icmp_header[1]}")
+                print(f"    ICMP checksum: {icmp_header[2]} {len(icmp_header[2])}")
+                print(f"    pid: {icmp_header[3]}")
+                print(f"    sequence number: {icmp_header[4]}")
+                
+            if int(upper_l_proto) == 6:
+                tcp_header = pparser.get_tcp_header(rawData[20:40])
+                print(f"### TCP header fields:")
+                print(f"    TCP src port: {tcp_header[0]}")
+                print(f"    TCP dest port: {tcp_header[1]}")
+                print(f"    TCP seq num: {tcp_header[2]}")
+                print(f"    TCP ack num: {tcp_header[3]}")
+                print(f"    TCP data offset: {tcp_header[4]}")
+                print(f"    TCP reserved: {tcp_header[5]}")
+                print(f"    TCP flags:")
+                for flag, val in zip(["nonce", "cwr", "ecn_echo", "urgent", "ack", "push", "reset", "syn", "fin"], tcp_header[6]):
+                    print(f"     TCP flag {flag}: {val}")
+                print(f"    TCP window size: {tcp_header[7]}")
+                print(f"    TCP checksum: {tcp_header[8]}")
+                print(f"    TCP urgent point: {tcp_header[9]}")
             
     
     except KeyboardInterrupt:
@@ -22,43 +55,7 @@ def main():
     print("Sniffer stops!")
 
 
-def data_link_header(rawData):
-    ether_header = struct.unpack('!6s6sH', rawData[:14])
-    #print(f"d: {d}")
-    #print(f"s: {s}")
-    #print(f"p: {p}")
-    destMac = mac_addr(ether_header[0])
-    srcMac = mac_addr(ether_header[1])
-    protoType = socket.htons(ether_header[2])
-    #print(f"destMac: {destMac}")
-    #print(f"srcMac: {srcMac}")
-    #print(f"protoType: {protoType}")
-    return destMac, srcMac, protoType
 
-def mac_addr(bytesObj):
-    addrSections = map(lambda x: format(x, '02x'), bytesObj)
-    #addrSections = map('{:02x}'.format, bytesObj)
-    return ':'.join(addrSections)
-
-def ip_header(rawData):
-    ip_header = struct.unpack('!BBHHHBBH4s4s', rawData[:20])
-    version = int((0b011110000 & ip_header[0])/16)
-    ihl = 0b000001111 & ip_header[0]
-    tos = format(ip_header[1], 'd')
-    totalLen = format(ip_header[2], 'd')
-    idf = format(ip_header[3], 'd')
-    ttl = format(ip_header[5],'d')
-    proto = format(ip_header[6], 'd')
-    srcIP = ip_addr(ip_header[8])
-    destIP = ip_addr(ip_header[9])
-    return version, ihl, tos, totalLen, idf, ttl, proto, srcIP, destIP
-
-def ip_addr(bytesObj):
-    addrSections = map(lambda x: format(x, 'd'), bytesObj)
-    return '.'.join(addrSections)
-    
-    
-    
     
 if __name__ == '__main__':
     main()
