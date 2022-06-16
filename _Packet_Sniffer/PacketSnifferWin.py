@@ -22,7 +22,7 @@ def main():
             print(f"Source MAC: {src_mac}")
             print(f"Protocol: {eth_proto}")
     except KeyboardInterrupt:
-        nrecv, ndrop, nifdrop = pc.stats()
+        nrecv, ndrop = pc.stats()
         print(f"\n{nrecv} packets received by filter")
         print(f"{ndrop} packets dropped by kernel")
     

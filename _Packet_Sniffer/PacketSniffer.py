@@ -9,60 +9,60 @@ def main():
 
     
     # create a raw socket and bind it to the public interface
-    winRawSocket = socket.socket(socket.AF_INET, socket.SOCK_RAW)
-    winRawSocket.bind((HOST,0))
+    win_raw_sock = socket.socket(socket.AF_INET, socket.SOCK_RAW)
+    win_raw_sock.bind((HOST,0))
     
     # Include IP headers
-    winRawSocket.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
+    win_raw_sock.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
 
     
     try: 
         while True:
             # receive all packages
-            winRawSocket.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
+            win_raw_sock.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
 
             # receive a package
-            rawData, addr = winRawSocket.recvfrom(65565)
-            #dlHeader = get_ether_header(rawData)
-            ipHeader = pparser.get_ip_header(rawData[:20])
+            raw_data, addr = win_raw_sock.recvfrom(65565)
+            #dlHeader = get_ether_header(raw_data)
+            ip_ver, ihl, tos, total_len, idf, ttl, upper_l_proto, src_ip, dest_ip = pparser.get_ip_header(raw_data[:20])
             #print(f"data link layer header: {dlHeader}")
             print("# Network Layer header fields:")
-            print(f"  IP version: {ipHeader[0]}")
-            print(f"  header length: {ipHeader[1]} 32-bit words = {int((ipHeader[1]*32/8))} bytes")
-            print(f"  Packet total length: {ipHeader[3]}")
-            print(f"  TTL: {ipHeader[5]}")
-            print(f"  Upper layer protocol: {ipHeader[6]}")
-            print(f"  ip addresses: src:{ipHeader[7]} --> dest:{ipHeader[8]}")
+            print(f"  IP version: {ip_ver}")
+            print(f"  header length: {ihl} 32-bit words = {int((ihl*32/8))} bytes")
+            print(f"  Packet total length: {total_len}")
+            print(f"  TTL: {ttl}")
+            print(f"  Upper layer protocol: {upper_l_proto}")
+            print(f"  ip addresses: src:{src_ip} --> dest:{dest_ip}")
             
             #print ICMP header
-            if int(ipHeader[6]) == 1:
-                icmp_header = pparser.get_icmp_header(rawData[20:28])
+            if int(upper_l_proto) == 1:
+                icmp_type, icmp_code, checksum, pid, seq_num = pparser.get_icmp_header(raw_data[20:28])
                 print("## ICMP header fields:")
-                print(f"   ICMP type: {icmp_header[0]}")
-                print(f"   ICMP code: {icmp_header[1]}")
-                print(f"   ICMP checksum: {icmp_header[2]} {len(icmp_header[2])}")
-                print(f"   pid: {icmp_header[3]}")
-                print(f"   sequence number: {icmp_header[4]}")
+                print(f"   ICMP type: {icmp_type}")
+                print(f"   ICMP code: {icmp_code}")
+                print(f"   ICMP checksum: {checksum}")
+                print(f"   pid: {pid}")
+                print(f"   sequence number: {seq_num}")
                 
             #print TCP header
-            if int(ipHeader[6]) == 6:
-                tcp_header = pparser.get_tcp_header(rawData[20:40])
+            if int(upper_l_proto) == 6:
+                src_port, dest_port, tcp_seq, tcp_ack, data_offset, reserved, control_flags, win_size, checksum, urg_pnt = pparser.get_tcp_header(raw_data[20:40])
                 print("## TCP header fields:")
-                print(f"   TCP src port: {tcp_header[0]}")
-                print(f"   TCP dest port: {tcp_header[1]}")
-                print(f"   TCP seq num: {tcp_header[2]}")
-                print(f"   TCP ack num: {tcp_header[3]}")
-                print(f"   TCP data offset: {tcp_header[4]}")
-                print(f"   TCP reserved: {tcp_header[5]}")
+                print(f"   TCP src port: {src_port}")
+                print(f"   TCP dest port: {dest_port}")
+                print(f"   TCP seq num: {tcp_seq}")
+                print(f"   TCP ack num: {tcp_ack}")
+                print(f"   TCP data offset: {data_offset}")
+                print(f"   TCP reserved: {reserved}")
                 print(f"   TCP flags:")
-                for flag, val in zip(["nonce", "cwr", "ecn_echo", "urgent", "ack", "push", "reset", "syn", "fin"], tcp_header[6]):
+                for flag, val in zip(["nonce", "cwr", "ecn_echo", "urgent", "ack", "push", "reset", "syn", "fin"], control_flags):
                     print(f"     TCP flag {flag}: {val}")
-                print(f"   TCP window size: {tcp_header[7]}")
-                print(f"   TCP checksum: {tcp_header[8]}")
-                print(f"   TCP urgent point: {tcp_header[9]}")
+                print(f"   TCP window size: {win_size}")
+                print(f"   TCP checksum: {checksum}")
+                print(f"   TCP urgent point: {urg_pnt}")
             
             # disabled promiscuous mode
-            winRawSocket.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
+            win_raw_sock.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
             
             
                 
@@ -70,7 +70,7 @@ def main():
         pass
     
     
-    winRawSocket.close()
+    win_raw_sock.close()
     print("Sniffer stops!")
 
 if __name__ == '__main__':
