@@ -14,12 +14,12 @@ def main():
     
     # Include IP headers
     win_raw_sock.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
-
+    # receive all packages
+    win_raw_sock.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
     
     try: 
         while True:
-            # receive all packages
-            win_raw_sock.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
+            
 
             # receive a package
             raw_data, addr = win_raw_sock.recvfrom(65565)
@@ -60,16 +60,12 @@ def main():
                 print(f"   TCP window size: {win_size}")
                 print(f"   TCP checksum: {checksum}")
                 print(f"   TCP urgent point: {urg_pnt}")
-            
-            # disabled promiscuous mode
-            win_raw_sock.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
-            
-            
                 
     except KeyboardInterrupt:
         pass
     
-    
+    # disabled promiscuous mode
+    win_raw_sock.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
     win_raw_sock.close()
     print("Sniffer stops!")
 
