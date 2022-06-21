@@ -45,16 +45,17 @@ def serverRecv(connectionSocket: socket.socket, liveSockets, nickname):
             #printLiveSockets(liveSockets)
             for key in liveSockets:
                 if key == nickname:
-                    liveSockets[key].send(("You: "+msg_recv).encode())
+                    #liveSockets[key].send(("You: "+msg_recv).encode())
+                    continue
                 else:
                     liveSockets[key].send((f"{nickname}: "+msg_recv).encode())
-        except socket.error as e:
-            #print(e)
+        except Exception as ex:
+            #print(ex)
             #printLiveSockets(liveSockets)
             print(f"{nickname} is leaving ...")
             del liveSockets[nickname]
-            connectionSocket.shutdown(socket.SHUT_RDWR)
-            connectionSocket.close()
+            #connectionSocket.shutdown(socket.SHUT_RDWR)
+            #connectionSocket.close()
             break
 
 
