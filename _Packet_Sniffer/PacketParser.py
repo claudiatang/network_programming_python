@@ -3,12 +3,12 @@ import socket
 
 def get_ether_header(eth_header_14):
     eth_header = struct.unpack('!6s6sH', eth_header_14)
-    dest_mac = get_mac_addr(eth_header[0])
-    src_mac = get_mac_addr(eth_header[1])
+    dest_mac = _get_mac_addr(eth_header[0])
+    src_mac = _get_mac_addr(eth_header[1])
     proto_type = socket.htons(eth_header[2])
     return dest_mac, src_mac, proto_type
 
-def get_mac_addr(addr_bytes_obj):
+def _get_mac_addr(addr_bytes_obj):
     addr_sections = map(lambda x: format(x, '02x'), addr_bytes_obj)
     #addrSections = map('{:02x}'.format, bytesObj)
     return ':'.join(addr_sections)
@@ -24,11 +24,11 @@ def get_ip_header(ip_header_20):
     idf = format(ip_header[3], 'd')
     ttl = format(ip_header[5],'d')
     upper_l_proto = format(ip_header[6], 'd')
-    src_ip = get_ip_addr(ip_header[8])
-    dest_ip = get_ip_addr(ip_header[9])
+    src_ip = _get_ip_addr(ip_header[8])
+    dest_ip = _get_ip_addr(ip_header[9])
     return ip_ver, ihl, tos, total_len, idf, ttl, upper_l_proto, src_ip, dest_ip
 
-def get_ip_addr(addr_bytes_obj):
+def _get_ip_addr(addr_bytes_obj):
     addr_sections = map(lambda x: format(x, 'd'), addr_bytes_obj)
     return '.'.join(addr_sections)
 
@@ -49,13 +49,13 @@ def get_tcp_header(tcp_header_20):
     tcp_ack = int(tcp_header[3])
     data_offset = bin(int((0b01111000000000000 & tcp_header[4])/4096))
     reserved = bin(int((0b00000111000000000 & tcp_header[4])/512))
-    control_flags = get_tcp_flags(0b00000000111111111 & tcp_header[4])
+    control_flags = _get_tcp_flags(0b00000000111111111 & tcp_header[4])
     win_size = int(tcp_header[5])
     checksum = bin(tcp_header[6])
     urg_pnt = tcp_header[7]
     return src_port, dest_port, tcp_seq, tcp_ack, data_offset, reserved, control_flags, win_size, checksum, urg_pnt
     
-def get_tcp_flags(flag_bits_9):
+def _get_tcp_flags(flag_bits_9):
     nonce =    bool(0b0100000000 & flag_bits_9)
     cwr =      bool(0b0010000000 & flag_bits_9)
     ecn_echo = bool(0b0001000000 & flag_bits_9)
