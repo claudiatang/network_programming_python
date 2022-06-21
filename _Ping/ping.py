@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import sys
 import socket
@@ -26,16 +28,17 @@ def main():
     
     for i in range(DEFAULT_PING_NUM):
         try:
-            socket = socket.socket(socket.AF_INET,socket.SOCK_RAW, socket.getprotobyname("icmp"))
+            raw_sock = socket.socket(socket.AF_INET,socket.SOCK_RAW, socket.getprotobyname("icmp"))
+            echo_req_pkt = constructEchoRequest(ECHOREQ_TYPE, ECHOREQ_CODE, PROCESS_ID, i, ECHOREQ_PLD_SIZE)
+            start_time = sendEchoRequest(raw_sock, echo_req_pkt, dest_IP)
+            if(start_time >= 0):
+                rcvEchoReply(TIMEOUT, start_time, raw_sock, PROCESS_ID)
+            raw_sock.close()
+        #print("socket closed")
         except socket.error as e:
             print("Create ICMP socket failed with error: ", end='')
             print(e)
-        echo_req_pkt = constructEchoRequest(ECHOREQ_TYPE, ECHOREQ_CODE, PROCESS_ID, i, ECHOREQ_PLD_SIZE)
-        start_time = sendEchoRequest(socket, echo_req_pkt, dest_IP)
-        if(start_time >= 0):
-            rcvEchoReply(TIMEOUT, start_time, socket, PROCESS_ID)
-        socket.close()
-        #print("socket closed")
+        
         
 
 
