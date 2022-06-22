@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from ast import Str
 import threading
 import socket
