@@ -98,7 +98,7 @@ def rcvEchoReply(default_timeout, start_time, ping_socket: socket.socket, pid):
     while True:
         ready = select.select([ping_socket],[],[], default_timeout)
         if ready[0] == []:
-            print("Request timed out!")
+            print("Request timed out! Destination host unreachable.")
             return
         
         rcv_echo_reply, addr = ping_socket.recvfrom(4096)

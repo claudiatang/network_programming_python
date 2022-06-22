@@ -14,13 +14,10 @@ try:
     for ip in range(1,255):
         ip_addr = parsed_args.network + '.' + str(ip)
         print(f"Scanning {ip_addr}")
-        if sys.platform.startswith("win"):
-            output = subprocess.Popen(["ping", "-n", "1", ip_addr], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
-        elif sys.platform.startswith("linux"):
-            output = subprocess.Popen(['/bin/ping','-c 1',ip_addr],stdout = subprocess.PIPE).communicate()[0]
+        output = subprocess.Popen(["python", "..\_Ping\ping.py", ip_addr], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
         output = output.decode("utf-8")
         #print(f"Output {output}")
         if not "unreachable" in output:
-            print(f"The Ip Address {ip_addr} has responded with a ECHO_REPLY!")
+            print(f"IP Address {ip_addr} has responded with a ECHO_REPLY!")
 except KeyboardInterrupt:
     print("Scan has been terminated ...")
