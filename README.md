@@ -14,9 +14,16 @@ Each program looks into some particular topics in network programming and provid
   - checksum calculation
   - ICMP message format
   - header information retrieval
+- [Network Scanner Program](https://github.com/claudiatang/network_programming_python/tree/main/_Network_Scanner)
+  - run another program as a subprocess in python 
+  - command line arguments manager using python argparse module
+- [Packet Sniffer Program](https://github.com/claudiatang/network_programming_python/tree/main/_Packet_Sniffer)
+  - create raw socket to receive ethernet packets
+  - parse network packet headers on different network layers
 - [TCP Chatroom Program](https://github.com/claudiatang/network_programming_python/tree/main/TCP_chatroom)
   - stateful connection in python
-  - multi threading to allow listening and sending simultaneously 
+  - multi threading to allow listening and sending simultaneously
+- [P2P Chatting Program](https://github.com/claudiatang/network_programming_python/tree/main/_Peer_to_Peer_Simple)
 
 ### Dependencies 
 python3 standard libraries.
