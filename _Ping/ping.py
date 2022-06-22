@@ -21,7 +21,7 @@ def main():
     ECHOREQ_TYPE = 8
     ECHOREQ_CODE = 0
     ECHOREQ_PLD_SIZE = 32
-    TIMEOUT = 4
+    TIMEOUT = 2
     PROCESS_ID = os.getpid()&0xffff #curb process id within the range of 0~65535
     print(PROCESS_ID)
     DEFAULT_PING_NUM = 4
