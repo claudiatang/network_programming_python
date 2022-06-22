@@ -14,21 +14,24 @@ def main():
     print("Chatroom is open now!")
     
     liveSockets = {}
-    while True:
-        try:
-            #printLiveSockets(liveSockets)
-            connectionSocket, addr = serverSocket.accept()
-            nickname = connectionSocket.recv(10).decode()
-            #print(nickname)
-            if connectionSocket != None:
-                liveSockets[nickname] = connectionSocket
-                #liveSockets[str(connectionSocket.getpeername()[1])] = connectionSocket
-                new_thread = threading.Thread(target=serverRecv, args=(connectionSocket, liveSockets, nickname))
-                new_thread.daemon = True
-                new_thread.start()
-        except socket.error as e:
-            print("*******************************************************************")
-            print(e)
+    try:
+        while True:
+            try:
+                #printLiveSockets(liveSockets)
+                connectionSocket, addr = serverSocket.accept()
+                nickname = connectionSocket.recv(10).decode()
+                #print(nickname)
+                if connectionSocket != None:
+                    liveSockets[nickname] = connectionSocket
+                    #liveSockets[str(connectionSocket.getpeername()[1])] = connectionSocket
+                    new_thread = threading.Thread(target=serverRecv, args=(connectionSocket, liveSockets, nickname))
+                    new_thread.daemon = True
+                    new_thread.start()
+            except socket.error as e:
+                print("*******************************************************************")
+                print(e)
+    except KeyboardInterrupt:
+        print("Server is closing ...")
         
     sys.exit()
 
