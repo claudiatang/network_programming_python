@@ -24,7 +24,7 @@ def main():
                 if connectionSocket != None:
                     liveSockets[nickname] = connectionSocket
                     #liveSockets[str(connectionSocket.getpeername()[1])] = connectionSocket
-                    new_thread = threading.Thread(target=serverRecv, args=(connectionSocket, liveSockets, nickname))
+                    new_thread = threading.Thread(target=serverRecvBroadcast, args=(connectionSocket, liveSockets, nickname))
                     new_thread.daemon = True
                     new_thread.start()
             except socket.error as e:
@@ -39,7 +39,7 @@ def printLiveSockets(liveSockets):
     for x in liveSockets:
         print(x)
 
-def serverRecv(connectionSocket: socket.socket, liveSockets, nickname):
+def serverRecvBroadcast(connectionSocket: socket.socket, liveSockets, nickname):
     while True:
         try:
             connectionSocket.send(("test_if_sock_is_still_open").encode())
