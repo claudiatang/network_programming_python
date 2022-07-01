@@ -4,14 +4,14 @@ import subprocess
 import argparse
 
 parser = argparse.ArgumentParser(description = "Scan devices on LAN")
-parser.add_argument("-n",dest="<network>", help="Network address <exp. 192.168.2>", type=str, required=True)
+parser.add_argument("-network", "-n", dest="lan", help="Network address <exp. 192.168.2>", type=str, required=True)
 #parser.add_argument("-machines",dest="machines", help="number of machines", type=int, required=True)
 
-parsed_args = parser.parse_args()
+lan_addr = parser.parse_args().lan
 
 try:
     for ip in range(1,255):
-        ip_addr = parsed_args.network + '.' + str(ip)
+        ip_addr = lan_addr + '.' + str(ip)
         print(f"Scanning {ip_addr}")
         output = subprocess.Popen(["python", "..\_Ping\ping.py", ip_addr], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
         output = output.decode("utf-8")
