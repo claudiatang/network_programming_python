@@ -47,23 +47,32 @@ def get_tcp_header(tcp_header_20):
     dest_port = int(tcp_header[1])
     tcp_seq = int(tcp_header[2])
     tcp_ack = int(tcp_header[3])
-    data_offset = bin(int((0b01111000000000000 & tcp_header[4])/4096))
-    reserved = bin(int((0b00000111000000000 & tcp_header[4])/512))
-    control_flags = _get_tcp_flags(0b00000000111111111 & tcp_header[4])
+    data_offset = f"{tcp_header[4]:>016b}"[:4]
+    reserved = f"{tcp_header[4]:>016b}"[4:7]
+    control_flags = _get_tcp_flags(0b0000000111111111 & tcp_header[4])
     win_size = int(tcp_header[5])
-    checksum = bin(tcp_header[6])
+    checksum = bin(tcp_header[6])[2:]
     urg_pnt = tcp_header[7]
     return src_port, dest_port, tcp_seq, tcp_ack, data_offset, reserved, control_flags, win_size, checksum, urg_pnt
     
 def _get_tcp_flags(flag_bits_9):
-    nonce =    bool(0b0100000000 & flag_bits_9)
-    cwr =      bool(0b0010000000 & flag_bits_9)
-    ecn_echo = bool(0b0001000000 & flag_bits_9)
-    urgent =   bool(0b0000100000 & flag_bits_9)
-    ack =      bool(0b0000010000 & flag_bits_9)
-    push =     bool(0b0000001000 & flag_bits_9)
-    reset =    bool(0b0000000100 & flag_bits_9)
-    syn =      bool(0b0000000010 & flag_bits_9)
-    fin =      bool(0b0000000001 & flag_bits_9)
+    nonce =    int(bool(0b100000000 & flag_bits_9))
+    cwr =      int(bool(0b010000000 & flag_bits_9))
+    ecn_echo = int(bool(0b001000000 & flag_bits_9))
+    urgent =   int(bool(0b000100000 & flag_bits_9))
+    ack =      int(bool(0b000010000 & flag_bits_9))
+    push =     int(bool(0b000001000 & flag_bits_9))
+    reset =    int(bool(0b000000100 & flag_bits_9))
+    syn =      int(bool(0b000000010 & flag_bits_9))
+    fin =      int(bool(0b000000001 & flag_bits_9))
     return nonce, cwr, ecn_echo, urgent, ack, push, reset, syn, fin
+
+def get_udp_header(udp_header_8):
+    udp_header = struct.unpack('!HHHH', udp_header_8)
+    src_port = int(udp_header[0])
+    dest_port = int(udp_header[1])
+    length = int(udp_header[2])
+    checksum = bin(udp_header[3])[2:]
+    return src_port, dest_port, length, checksum
+    
     

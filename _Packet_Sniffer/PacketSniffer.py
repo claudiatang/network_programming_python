@@ -35,6 +35,7 @@ def main():
             
             if is_win:
                 ip_ver, ihl, tos, total_len, idf, ttl, upper_l_proto, src_ip, dest_ip = pparser.get_ip_header(raw_data[:20])
+                print()
                 print_ip_header(ip_ver, ihl, total_len, ttl, upper_l_proto, src_ip, dest_ip)
                 if int(upper_l_proto) == 1:
                     icmp_type, icmp_code, checksum, pid, seq_num = pparser.get_icmp_header(raw_data[20:28])
@@ -42,12 +43,16 @@ def main():
                 if int(upper_l_proto) == 6:
                     src_port, dest_port, tcp_seq, tcp_ack, data_offset, reserved, control_flags, win_size, checksum, urg_pnt = pparser.get_tcp_header(raw_data[20:40])
                     print_tcp_header(src_port, dest_port, tcp_seq, tcp_ack, data_offset, reserved, control_flags, win_size, checksum, urg_pnt)
+                if int(upper_l_proto) == 17:
+                    src_port, dest_port, length, checksum = pparser.get_udp_header(raw_data[20:28])
+                    print_udp_header(src_port, dest_port, length, checksum)
                 
                 
                     
             elif not is_win:
                 dest_mac, src_mac, eth_type = pparser.get_ether_header(raw_data[:14])
                 ip_ver, ihl, tos, total_len, idf, ttl, upper_l_proto, src_ip, dest_ip = pparser.get_ip_header(raw_data[14:34])
+                print()
                 print_eth_header(dest_mac, src_mac, eth_type)
                 print_ip_header(ip_ver, ihl, total_len, ttl, upper_l_proto, src_ip, dest_ip)
                 if int(upper_l_proto) == 1:
@@ -56,6 +61,9 @@ def main():
                 if int(upper_l_proto) == 6:
                     src_port, dest_port, tcp_seq, tcp_ack, data_offset, reserved, control_flags, win_size, checksum, urg_pnt = pparser.get_tcp_header(raw_data[34:54])
                     print_tcp_header(src_port, dest_port, tcp_seq, tcp_ack, data_offset, reserved, control_flags, win_size, checksum, urg_pnt)
+                if int(upper_l_proto) == 17:
+                    src_port, dest_port, length, checksum = pparser.get_udp_header(raw_data[34:42])
+                    print_udp_header(src_port, dest_port, length, checksum)
                 
             else:
                 print("Unknown platform. Exit!")
@@ -77,36 +85,44 @@ def print_eth_header(dest_mac, src_mac, eth_type ):
     print(f"  ethernet type: {eth_type}")
 
 def print_ip_header(ip_ver, ihl, total_len, ttl, upper_l_proto, src_ip, dest_ip):
-    print(f"## Network Layer header fields:")
-    print(f"   IP version: {ip_ver}")
-    print(f"   header length: {ihl} 32-bit words = {int((ihl*32/8))} bytes")
-    print(f"   Packet total length: {total_len}")
-    print(f"   TTL: {ttl}")
-    print(f"   Upper layer protocol: {upper_l_proto}")
-    print(f"   ip addresses: src:{src_ip} --> dest:{dest_ip}")
+    print(f"  ## Network Layer header fields:")
+    print(f"     IP version: {ip_ver}")
+    print(f"     header length: {ihl} 32-bit words = {int((ihl*32/8))} bytes")
+    print(f"     Packet total length: {total_len}")
+    print(f"     TTL: {ttl}")
+    print(f"     Upper layer protocol: {upper_l_proto}")
+    print(f"     ip addresses: src:{src_ip} --> dest:{dest_ip}")
     
 def print_icmp_header(icmp_type, icmp_code, checksum, pid, seq_num):
-    print("### ICMP header fields:")
-    print(f"    ICMP type: {icmp_type}")
-    print(f"    ICMP code: {icmp_code}")
-    print(f"    ICMP checksum: {checksum}")
-    print(f"    pid: {pid}")
-    print(f"    sequence number: {seq_num}")
+    print(f"     ### ICMP header fields:")
+    print(f"         ICMP type: {icmp_type}")
+    print(f"         ICMP code: {icmp_code}")
+    print(f"         ICMP checksum: {checksum}")
+    print(f"         pid: {pid}")
+    print(f"         sequence number: {seq_num}")
     
 def print_tcp_header(src_port, dest_port, tcp_seq, tcp_ack, data_offset, reserved, control_flags, win_size, checksum, urg_pnt):
-    print("### TCP header fields:")
-    print(f"    TCP src port: {src_port}")
-    print(f"    TCP dest port: {dest_port}")
-    print(f"    TCP seq num: {tcp_seq}")
-    print(f"    TCP ack num: {tcp_ack}")
-    print(f"    TCP data offset: {data_offset}")
-    print(f"    TCP reserved: {reserved}")
-    print(f"    TCP flags:")
+    print(f"     ### TCP header fields:")
+    print(f"         TCP src port: {src_port}")
+    print(f"         TCP dest port: {dest_port}")
+    print(f"         TCP seq num: {tcp_seq}")
+    print(f"         TCP ack num: {tcp_ack}")
+    print(f"         TCP data offset: {data_offset}")
+    print(f"         TCP reserved: {reserved}")
+    print(f"         TCP flags:")
     for flag, val in zip(["nonce", "cwr", "ecn_echo", "urgent", "ack", "push", "reset", "syn", "fin"], control_flags):
-        print(f"     TCP flag {flag}: {val}")
-    print(f"   TCP window size: {win_size}")
-    print(f"   TCP checksum: {checksum}")
-    print(f"   TCP urgent point: {urg_pnt}")
+        print(f"            TCP flag {flag}: {val}")
+    print(f"         TCP window size: {win_size}")
+    print(f"         TCP checksum: {checksum}")
+    print(f"         TCP urgent point: {urg_pnt}")
+    
+def print_udp_header(src_port, dest_port, length, checksum):
+    print(f"     ### UDP header fields:")
+    print(f"         UDP src port: {src_port}")
+    print(f"         UDP dest port: {dest_port}")
+    print(f"         UDP segment length: {length}")
+    print(f"         UDP checksum: {checksum}")
+    
     
     
 
