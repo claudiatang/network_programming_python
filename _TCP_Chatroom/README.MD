@@ -14,7 +14,7 @@
 - Multiple clients can be connected to the chatroom server
 ### Chatroom architecture
 -  A diagram illustrating the chatroom client-server architecture and how messages flow
-  <img src="https://github.com/claudiatang/network_programming_python/blob/main/img/chatroom_client_server.png"  width="800" height="auto">
+    <img src="https://github.com/claudiatang/network_programming_python/blob/main/img/chatroom_client_server.png"  width="800" height="auto">
 
 ### Python threading
 - The client program uses threading to enable sending messages to the server and listening on the port to receive messages simultaneously.
