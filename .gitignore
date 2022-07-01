@@ -1,3 +1,4 @@
 **/.history/
 *.pyc
 /_Packet_Sniffer/PacketSnifferWin.py
+/_Packet_Sniffer/PacketSnifferLinux.py
