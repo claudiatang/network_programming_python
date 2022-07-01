@@ -14,7 +14,7 @@ def main():
             print(f"# Ethernet header info:")
             print(f"  dest mac: {ether_header[0]}")
             print(f"  source mac: {ether_header[1]}")
-            print(f"  ethernet protocol: {ether_header[2]}")
+            print(f"  ethernet type: {ether_header[2]}")
             
             ip_ver, ihl, tos, total_len, idf, ttl, upper_l_proto, src_ip, dest_ip = pparser.get_ip_header(raw_data[14:34])
             print(f"## IP header info:")
