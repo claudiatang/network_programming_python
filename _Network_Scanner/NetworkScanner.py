@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
 import subprocess
-import sys
 import argparse
 
 parser = argparse.ArgumentParser(description = "Scan devices on LAN")
-parser.add_argument("-nw",dest="network", help="Network address <exp. 192.168.2>", type=str, required=True)
+parser.add_argument("-n",dest="<network>", help="Network address <exp. 192.168.2>", type=str, required=True)
 #parser.add_argument("-machines",dest="machines", help="number of machines", type=int, required=True)
 
 parsed_args = parser.parse_args()
