@@ -17,6 +17,9 @@ Each program looks into some particular topics in network programming and provid
 - [Network Scanner Program](https://github.com/claudiatang/network_programming_python/tree/main/_Network_Scanner)
   - run another program as a subprocess in python 
   - command line arguments manager using python argparse module
+- [Port Scanner Program](https://github.com/claudiatang/network_programming_python/tree/main/_Port_Scanner)
+  - probe whether specified tcp ports of a remote host is open or closed 
+  - more argparse module functions
 - [Packet Sniffer Program](https://github.com/claudiatang/network_programming_python/tree/main/_Packet_Sniffer)
   - create raw socket to receive ethernet packets
   - parse network packet headers on different network layers
