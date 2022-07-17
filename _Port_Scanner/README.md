@@ -1,1 +1,3 @@
 ### TCP Port Scanner
+The [PortScanner.py](https://github.com/claudiatang/network_programming_python/blob/main/_Port_Scanner/PortScanner.py) script implements a TCP full connection scan, which is equivalent to the ```-sT``` flag used with ```nmap```
+For detailed explanation on different port scanning techniques, pleaser refer to [this article](https://nmap.org/book/man-port-scanning-techniques.html) by namp.org
